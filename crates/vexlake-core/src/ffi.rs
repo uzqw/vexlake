@@ -50,7 +50,11 @@ pub extern "C" fn vexlake_shutdown() {
 
 /// Insert a vector into the index
 /// Returns 0 on success, negative on error
+///
+/// # Safety
+/// The caller must ensure that `vec_ptr` points to a valid array of at least `len` f32 values.
 #[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub extern "C" fn vexlake_insert(id: u64, vec_ptr: *const f32, len: c_int) -> c_int {
     catch_unwind(|| {
         let mut engine_lock = ENGINE.lock().unwrap();
@@ -67,7 +71,11 @@ pub extern "C" fn vexlake_insert(id: u64, vec_ptr: *const f32, len: c_int) -> c_
 
 /// Search for the top K most similar vectors
 /// Returns a JSON string of results (caller must free via vexlake_free_string)
+///
+/// # Safety
+/// The caller must ensure that `query_ptr` points to a valid array of at least `len` f32 values.
 #[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub extern "C" fn vexlake_search(
     query_ptr: *const f32,
     len: c_int,
@@ -94,7 +102,11 @@ pub extern "C" fn vexlake_search(
 }
 
 /// Free a string allocated by Rust
+///
+/// # Safety
+/// The caller must ensure that `ptr` was allocated by a Rust function in this library (e.g., `vexlake_search`).
 #[no_mangle]
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
 pub extern "C" fn vexlake_free_string(ptr: *mut c_char) {
     if !ptr.is_null() {
         unsafe {
