@@ -1,0 +1,55 @@
+# Build artifacts
+/target/
+/bin/
+/dist/
+
+# Dependencies
+/vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Rust
+*.rs.bk
+Cargo.lock
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+go.work.sum
+
+# Coverage
+coverage.out
+coverage.html
+lcov.info
+*.lcov
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.envrc
+
+# Documentation build
+/site/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

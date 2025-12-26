@@ -1,0 +1,38 @@
+[package]
+name = "vexlake-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Core vector database engine with SIMD-accelerated search and S3 storage"
+
+[lib]
+name = "vexlake_core"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+arrow.workspace = true
+datafusion.workspace = true
+parquet.workspace = true
+opendal.workspace = true
+bytes.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+libc.workspace = true
+simsimd.workspace = true
+rayon.workspace = true
+tracing.workspace = true
+thiserror.workspace = true
+anyhow.workspace = true
+tempfile.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+rand.workspace = true
+tokio = { workspace = true, features = ["test-util"] }
+
+[[bench]]
+name = "vector_ops"
+harness = false
