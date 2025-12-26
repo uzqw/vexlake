@@ -7,6 +7,7 @@
 //!
 //! All functions have SIMD-accelerated implementations using AVX-512/NEON
 //! when available, with automatic fallback to scalar implementations.
+use serde::{Deserialize, Serialize};
 
 /// Compute cosine similarity between two vectors
 ///
@@ -79,7 +80,7 @@ pub fn normalize(v: &mut [f32]) {
 }
 
 /// Search result with ID and score
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SearchResult {
     /// Vector ID
     pub id: u64,
@@ -94,7 +95,9 @@ impl SearchResult {
     }
 }
 
-/// Brute-force TopK search
+use rayon::prelude::*;
+
+/// Brute-force TopK search (parallel version)
 ///
 /// # Arguments
 /// * `query` - Query vector
@@ -103,6 +106,24 @@ impl SearchResult {
 ///
 /// # Returns
 /// Top K most similar vectors sorted by score (descending)
+pub fn brute_force_topk_parallel(
+    query: &[f32],
+    vectors: &[(u64, Vec<f32>)],
+    k: usize,
+) -> Vec<SearchResult> {
+    let mut results: Vec<SearchResult> = vectors
+        .par_iter()
+        .map(|(id, vec)| SearchResult::new(*id, cosine_similarity(query, vec)))
+        .collect();
+
+    // Sort by score descending
+    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap());
+
+    results.truncate(k);
+    results
+}
+
+/// Brute-force TopK search
 pub fn brute_force_topk(query: &[f32], vectors: &[(u64, Vec<f32>)], k: usize) -> Vec<SearchResult> {
     let mut results: Vec<SearchResult> = vectors
         .iter()
@@ -179,6 +200,23 @@ mod tests {
         ];
 
         let results = brute_force_topk(&query, &vectors, 2);
+
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].id, 1);
+        assert_eq!(results[1].id, 3);
+    }
+
+    #[test]
+    fn test_brute_force_topk_parallel() {
+        let query = vec![1.0, 0.0, 0.0];
+        let vectors = vec![
+            (1, vec![1.0, 0.0, 0.0]),
+            (2, vec![0.0, 1.0, 0.0]),
+            (3, vec![0.5, 0.5, 0.0]),
+            (4, vec![-1.0, 0.0, 0.0]),
+        ];
+
+        let results = brute_force_topk_parallel(&query, &vectors, 2);
 
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].id, 1);

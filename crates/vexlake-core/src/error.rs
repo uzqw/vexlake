@@ -20,6 +20,10 @@ pub enum Error {
     #[error("Serialization error: {0}")]
     Serialization(#[from] serde_json::Error),
 
+    /// Binary serialization/deserialization failed
+    #[error("Bincode error: {0}")]
+    Bincode(String),
+
     /// Index operation failed
     #[error("Index error: {0}")]
     Index(String),

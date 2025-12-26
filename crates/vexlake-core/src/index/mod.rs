@@ -1,14 +1,8 @@
-//! Vector index implementations
-//!
-//! This module provides vector indexing algorithms:
-//! - HNSW (Hierarchical Navigable Small World)
-//! - IVF (Inverted File Index) - future
-//!
-//! Indexes are serializable and can be stored in S3.
-
-use std::collections::HashMap;
+pub mod hnsw;
 
 use crate::{Error, Result};
+pub use hnsw::{HnswConfig, HnswIndex};
+use std::collections::HashMap;
 
 /// Index configuration
 #[derive(Debug, Clone)]
