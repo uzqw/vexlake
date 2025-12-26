@@ -116,6 +116,9 @@ verify: fmt-rust fmt-go vet
 	@echo ">>> Running Rust tests..."
 	$(CARGO) test --all-features
 	@echo ""
+	@echo ">>> Running golangci-lint..."
+	golangci-lint run ./...
+	@echo ""
 	@echo ">>> Running Go tests with race detector..."
 	$(GOTEST) -v -race ./...
 	@echo ""

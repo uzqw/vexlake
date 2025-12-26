@@ -184,7 +184,10 @@ func handleVSearch(conn redcon.Conn, cmd redcon.Command) {
 
 func handleClear(conn redcon.Conn) {
 	core.Shutdown()
-	core.Init(*dimension)
+	if err := core.Init(*dimension); err != nil {
+		conn.WriteError("ERR failed to reinitialize: " + err.Error())
+		return
+	}
 	conn.WriteString("OK")
 }
 
