@@ -10,7 +10,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     /// Storage operation failed
     #[error("Storage error: {0}")]
-    Storage(#[from] opendal::Error),
+    Storage(#[from] Box<opendal::Error>),
 
     /// Arrow/Parquet operation failed
     #[error("Arrow error: {0}")]

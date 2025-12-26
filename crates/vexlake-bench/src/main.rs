@@ -1,8 +1,8 @@
 //! VexLake Benchmark Tool
 
-use std::time::Instant;
 use rand::Rng;
-use vexlake_core::vector::{cosine_similarity, brute_force_topk};
+use std::time::Instant;
+use vexlake_core::vector::{brute_force_topk, cosine_similarity};
 
 fn main() {
     println!("VexLake Benchmark Suite");

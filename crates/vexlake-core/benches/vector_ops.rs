@@ -1,6 +1,6 @@
 //! Benchmarks for vector operations
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 use rand::Rng;
 
 fn random_vector(dim: usize) -> Vec<f32> {
@@ -45,9 +45,8 @@ fn bench_brute_force_topk(c: &mut Criterion) {
     let k = 10;
 
     for size in [1000, 10000] {
-        let vectors: Vec<(u64, Vec<f32>)> = (0..size)
-            .map(|i| (i as u64, random_vector(dim)))
-            .collect();
+        let vectors: Vec<(u64, Vec<f32>)> =
+            (0..size).map(|i| (i as u64, random_vector(dim))).collect();
         let query = random_vector(dim);
 
         group.bench_with_input(BenchmarkId::from_parameter(size), &size, |bench, _| {

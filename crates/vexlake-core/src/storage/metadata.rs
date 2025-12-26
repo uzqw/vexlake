@@ -6,8 +6,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::{Error, Result};
 use super::StorageClient;
+use crate::{Error, Result};
 
 /// Information about a VexLake data version
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -53,7 +53,10 @@ impl<'a> MetadataManager<'a> {
 
         let data = self.client.read(&Self::latest_path()).await?;
         let content = String::from_utf8(data).map_err(|e| Error::Ffi(e.to_string()))?;
-        content.trim().parse::<u64>().map_err(|e| Error::Ffi(e.to_string()))
+        content
+            .trim()
+            .parse::<u64>()
+            .map_err(|e| Error::Ffi(e.to_string()))
     }
 
     /// Get details for a specific version
@@ -84,10 +87,14 @@ impl<'a> MetadataManager<'a> {
         let data = serde_json::to_vec(&info).map_err(Error::Serialization)?;
 
         // 1. Write the versioned metadata file
-        self.client.write(&Self::version_path(version), data).await?;
+        self.client
+            .write(&Self::version_path(version), data)
+            .await?;
 
         // 2. Update the "latest" pointer (pseudo-atomic in S3)
-        self.client.write(&Self::latest_path(), version.to_string().into_bytes()).await?;
+        self.client
+            .write(&Self::latest_path(), version.to_string().into_bytes())
+            .await?;
 
         Ok(())
     }

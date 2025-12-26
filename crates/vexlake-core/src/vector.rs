@@ -172,10 +172,10 @@ mod tests {
     fn test_brute_force_topk() {
         let query = vec![1.0, 0.0, 0.0];
         let vectors = vec![
-            (1, vec![1.0, 0.0, 0.0]),   // similarity = 1.0
-            (2, vec![0.0, 1.0, 0.0]),   // similarity = 0.0
-            (3, vec![0.5, 0.5, 0.0]),   // similarity = 0.707
-            (4, vec![-1.0, 0.0, 0.0]),  // similarity = -1.0
+            (1, vec![1.0, 0.0, 0.0]),  // similarity = 1.0
+            (2, vec![0.0, 1.0, 0.0]),  // similarity = 0.0
+            (3, vec![0.5, 0.5, 0.0]),  // similarity = 0.707
+            (4, vec![-1.0, 0.0, 0.0]), // similarity = -1.0
         ];
 
         let results = brute_force_topk(&query, &vectors, 2);

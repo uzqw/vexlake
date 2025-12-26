@@ -23,13 +23,11 @@ pub extern "C" fn vexlake_version() -> *const c_char {
 /// Returns 0 on success, negative on error
 #[no_mangle]
 pub extern "C" fn vexlake_init() -> c_int {
-    match catch_unwind(|| {
+    catch_unwind(|| {
         // Initialize tracing, etc.
         0
-    }) {
-        Ok(result) => result,
-        Err(_) => -1, // Panic occurred
-    }
+    })
+    .unwrap_or(-1)
 }
 
 /// Shutdown the VexLake engine

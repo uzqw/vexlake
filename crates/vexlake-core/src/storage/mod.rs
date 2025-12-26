@@ -8,8 +8,8 @@
 pub mod metadata;
 pub mod parquet;
 
-use opendal::Operator;
 pub use metadata::{MetadataManager, VersionInfo};
+use opendal::Operator;
 pub use parquet::{ParquetReader, ParquetWriter, VexSchema};
 
 use crate::{Error, Result};
@@ -59,7 +59,7 @@ pub fn create_s3_operator(config: &StorageConfig) -> Result<Operator> {
     builder = builder.enable_virtual_host_style();
 
     let op = Operator::new(builder)
-        .map_err(Error::Storage)?
+        .map_err(|e| Error::Storage(Box::new(e)))?
         .finish();
 
     Ok(op)
@@ -69,7 +69,7 @@ pub fn create_s3_operator(config: &StorageConfig) -> Result<Operator> {
 pub fn create_memory_operator() -> Result<Operator> {
     let builder = opendal::services::Memory::default();
     let op = Operator::new(builder)
-        .map_err(Error::Storage)?
+        .map_err(|e| Error::Storage(Box::new(e)))?
         .finish();
     Ok(op)
 }
@@ -107,7 +107,7 @@ impl StorageClient {
         self.operator
             .write(path, data)
             .await
-            .map_err(Error::Storage)
+            .map_err(|e| Error::Storage(Box::new(e)))
     }
 
     /// Read data from storage
@@ -116,7 +116,7 @@ impl StorageClient {
             .read(path)
             .await
             .map(|buf| buf.to_vec())
-            .map_err(Error::Storage)
+            .map_err(|e| Error::Storage(Box::new(e)))
     }
 
     /// Check if a path exists
@@ -124,17 +124,23 @@ impl StorageClient {
         self.operator
             .exists(path)
             .await
-            .map_err(Error::Storage)
+            .map_err(|e| Error::Storage(Box::new(e)))
     }
 
     /// Delete a path
     pub async fn delete(&self, path: &str) -> Result<()> {
-        self.operator.delete(path).await.map_err(Error::Storage)
+        self.operator
+            .delete(path)
+            .await
+            .map_err(|e| Error::Storage(Box::new(e)))
     }
 
     /// Delete all objects under a prefix
     pub async fn delete_all(&self, prefix: &str) -> Result<()> {
-        self.operator.remove_all(prefix).await.map_err(Error::Storage)
+        self.operator
+            .remove_all(prefix)
+            .await
+            .map_err(|e| Error::Storage(Box::new(e)))
     }
 
     /// List objects under a prefix
@@ -143,7 +149,7 @@ impl StorageClient {
             .operator
             .list(prefix)
             .await
-            .map_err(Error::Storage)?;
+            .map_err(|e| Error::Storage(Box::new(e)))?;
 
         Ok(entries.into_iter().map(|e| e.path().to_string()).collect())
     }
